@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github/pheethy/todo/constants"
+	"github/pheethy/todo/helper"
 	"github/pheethy/todo/models"
 	"github/pheethy/todo/service/todo"
 	"log"
@@ -64,7 +65,7 @@ func (t todoRepository) CreateTask(ctx context.Context, task *models.Task) error
 		if strings.Contains(err.Error(), constants.ERROR_TASKNAME_WAS_DUPLICATE) {
 			return errors.New(constants.ERROR_TASKNAME_WAS_DUPLICATE_SERVICE)
 		}
-
+		tx.Rollback()
 		return err
 	}
 
@@ -73,17 +74,16 @@ func (t todoRepository) CreateTask(ctx context.Context, task *models.Task) error
 
 func (t todoRepository) FetchListTodo(ctx context.Context) ([]*models.Task, error) {
 	sql := `
-		SELECT
-			id,
-			task_name,
-			status,
-			creator_name,
-			created_at,
-			updated_at
-		FROM
-			todo
+	SELECT
+		id,
+		task_name,
+		status,
+		creator_name,
+		created_at,
+		updated_at
+	FROM
+		todo
 	`
-
 	rows, err := t.db.QueryxContext(ctx, sql)
 	if err != nil {
 		log.Fatal(err)
@@ -98,17 +98,22 @@ func (t todoRepository) orm(rows *sqlx.Rows) ([]*models.Task, error) {
 
 	for rows.Next() {
 		task := &models.Task{}
+		var createdAtString, updatedAtString string // Temporary variables for string conversion
 		err := rows.Scan(
 			&task.Id,
 			&task.TaskName,
 			&task.Status,
 			&task.CreatorName,
-			&task.CreatedAt,
-			&task.UpdatedAt,
+			&createdAtString, // Scan as string
+			&updatedAtString, // Scan as string
 		)
 		if err != nil {
 			return nil, err
 		}
+		c := helper.NewTimestampFromString(createdAtString)
+		u := helper.NewTimestampFromString(updatedAtString)
+		task.CreatedAt = &c // Convert string to Timestamp
+		task.UpdatedAt = &u // Convert string to Timestamp
 		tasks = append(tasks, task)
 	}
 
