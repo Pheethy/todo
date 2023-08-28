@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github/pheethy/todo/constants"
-	"github/pheethy/todo/helper"
 	"github/pheethy/todo/models"
 	"github/pheethy/todo/service/todo"
 	"log"
@@ -98,22 +97,18 @@ func (t todoRepository) orm(rows *sqlx.Rows) ([]*models.Task, error) {
 
 	for rows.Next() {
 		task := &models.Task{}
-		var createdAtString, updatedAtString string // Temporary variables for string conversion
 		err := rows.Scan(
 			&task.Id,
 			&task.TaskName,
 			&task.Status,
 			&task.CreatorName,
-			&createdAtString, // Scan as string
-			&updatedAtString, // Scan as string
+			&task.CreatedAt, // Scan as string
+			&task.UpdatedAt, // Scan as string
 		)
 		if err != nil {
+			log.Println("err here")
 			return nil, err
 		}
-		c := helper.NewTimestampFromString(createdAtString)
-		u := helper.NewTimestampFromString(updatedAtString)
-		task.CreatedAt = &c // Convert string to Timestamp
-		task.UpdatedAt = &u // Convert string to Timestamp
 		tasks = append(tasks, task)
 	}
 
