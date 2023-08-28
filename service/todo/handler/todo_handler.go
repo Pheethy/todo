@@ -36,7 +36,7 @@ func (h todoHandler) CreateTask(c *gin.Context) {
 
 	err = h.todoUs.CreateTask(ctx, newTask)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -54,6 +54,11 @@ func (h todoHandler) FetchListTodo(c *gin.Context) {
 	tasks, err := h.todoUs.FetchListTodo(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if len(tasks) < 1 {
+		c.JSON(http.StatusNoContent, nil)
 		return
 	}
 
