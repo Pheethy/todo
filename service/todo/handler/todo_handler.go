@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"github/pheethy/todo/helper"
 	"github/pheethy/todo/models"
 	"github/pheethy/todo/service/todo"
-	"log"
 	"net/http"
 	"time"
 
@@ -24,9 +24,9 @@ func (h todoHandler) CreateTask(c *gin.Context) {
 	var newTask = new(models.Task)
 	var now = helper.NewTimestampFromTime(time.Now())
 
-	err := c.ShouldBindJSON(newTask)
-	if err != nil {
-		log.Println(err)
+	if err := c.ShouldBindJSON(newTask); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("can't binding data: ", err))
+		return
 	}
 
 	newTask.NewId()
@@ -34,8 +34,7 @@ func (h todoHandler) CreateTask(c *gin.Context) {
 	newTask.SetUpatedAt(now)
 	newTask.Status = "draft"
 
-	err = h.todoUs.CreateTask(ctx, newTask)
-	if err != nil {
+	if err := h.todoUs.CreateTask(ctx, newTask); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}

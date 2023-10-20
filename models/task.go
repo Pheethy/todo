@@ -7,7 +7,7 @@ import (
 )
 
 type Task struct {
-	TableName   struct{}          `json:"-" db:"todo" pk:"ID"`
+	TableName   struct{}          `json:"-" db:"todo" pk:"Id"`
 	Id          *uuid.UUID        `json:"id" db:"id" type:"uuid"`
 	TaskName    string            `json:"task_name" db:"task_name" type:"string"`
 	Status      string            `json:"status" db:"status" type:"string"`

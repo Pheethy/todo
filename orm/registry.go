@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"github/pheethy/todo/helper"
 	"reflect"
 	"time"
 
@@ -315,10 +316,10 @@ func (elem timestamp) Bind(field *structs.Field, val interface{}) error {
 	if val != nil {
 		switch reflect.TypeOf(val).String() {
 		case "time.Time":
-			timestamp := helperModel.Timestamp(val.(time.Time))
+			timestamp := helper.Timestamp(val.(time.Time))
 			field.Set(&timestamp)
 		case "string":
-			timestamp := models.NewTimestampFromString(cast.ToString(val))
+			timestamp := helper.NewTimestampFromString(cast.ToString(val))
 			field.Set(&timestamp)
 		}
 	}
