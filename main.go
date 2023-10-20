@@ -64,8 +64,7 @@ func main() {
 			log.Fatalf("Listen: %s\n", err)
 		}
 	}()
-
-	<-ctx.Done()
+	<- ctx.Done()
 	stop()
 	fmt.Println("shutting down gracefully.")
 

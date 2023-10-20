@@ -5,11 +5,12 @@ import (
 	"errors"
 	"github/pheethy/todo/constants"
 	"github/pheethy/todo/models"
+	"github/pheethy/todo/orm"
 	"github/pheethy/todo/service/todo"
 	"log"
 	"strings"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/BlackMocca/sqlx"
 )
 
 type todoRepository struct {
@@ -89,7 +90,14 @@ func (t todoRepository) FetchListTodo(ctx context.Context) ([]*models.Task, erro
 	}
 	defer rows.Close()
 
-	return t.orm(rows)
+	mapper, err := orm.Orm(new(models.Task), rows, orm.NewMapperOption())
+	if err != nil {
+		panic(err)
+	}
+
+	tasks := mapper.GetData().([]*models.Task)
+	
+	return tasks, nil
 }
 
 func (t todoRepository) orm(rows *sqlx.Rows) ([]*models.Task, error) {

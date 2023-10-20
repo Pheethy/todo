@@ -7,13 +7,14 @@ import (
 )
 
 type Task struct {
-	Id          *uuid.UUID        `json:"id" db:"id"`
-	TaskName    string            `json:"task_name" db:"task_name"`
-	Status      string            `json:"status" db:"status"`
-	CreatorName string            `json:"creator_name" db:"creator_name"`
-	CreatedAt   *helper.Timestamp `json:"created_at" db:"created_at"`
-	UpdatedAt   *helper.Timestamp `json:"updated_at" db:"updated_at"`
-	DeletedAt   *helper.Timestamp `json:"deleted_at" db:"deleted_at"`
+	TableName   struct{}          `json:"-" db:"todo" pk:"ID"`
+	Id          *uuid.UUID        `json:"id" db:"id" type:"uuid"`
+	TaskName    string            `json:"task_name" db:"task_name" type:"string"`
+	Status      string            `json:"status" db:"status" type:"string"`
+	CreatorName string            `json:"creator_name" db:"creator_name" type:"string"`
+	CreatedAt   *helper.Timestamp `json:"created_at" db:"created_at" type:"timestamp"`
+	DeletedAt   *helper.Timestamp `json:"deleted_at" db:"deleted_at" type:"timestamp"`
+	UpdatedAt   *helper.Timestamp `json:"updated_at" db:"updated_at" type:"timestamp"`
 }
 
 func (t *Task) NewId() {
